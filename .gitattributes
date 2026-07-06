@@ -1,0 +1,2 @@
+ai-server/models/stack_vit.pth filter=lfs diff=lfs merge=lfs -text
+ai-server/models/damage_resnet50.pth filter=lfs diff=lfs merge=lfs -text
