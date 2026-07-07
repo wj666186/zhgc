@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/gangkou.iml" filepath="$PROJECT_DIR$/.idea/gangkou.iml" />
-      <module fileurl="file://$PROJECT_DIR$/port-schedule-server/port-schedule-server.iml" filepath="$PROJECT_DIR$/port-schedule-server/port-schedule-server.iml" />
     </modules>
   </component>
 </project>
