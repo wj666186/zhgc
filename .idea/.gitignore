@@ -1,8 +1,18 @@
+<<<<<<< HEAD
 # Default ignored files
 /shelf/
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+=======
+# 默认忽略的文件
+/shelf/
+/workspace.xml
+# 基于编辑器的 HTTP 客户端请求
+/httpRequests/
+# 依赖于环境的 Maven 主目录路径
+/mavenHomeManager.xml
+>>>>>>> 906f55dc182a3d017789759995b2bcf4c04d2750
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
