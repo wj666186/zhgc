@@ -26,3 +26,4 @@ export function markDamageContainer(containerNo: string) {
         data: { containerNo }
     })
 }
+

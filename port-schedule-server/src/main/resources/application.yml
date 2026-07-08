@@ -1,24 +1,31 @@
+# 服务端口
 server:
   port: 8080
 
+# 数据库配置
 spring:
-  application:
-    name: port-schedule-server
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/db_port?useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/db_port?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
-    password: root
-  # SpringBoot3 标准redis路径，消除过时警告
-  redis:
-    data:
-      host: 127.0.0.1
-      port: 6379
+    password: wj200587
+  # 开启mapper热加载
+  devtools:
+    restart:
+      enabled: true
 
+# MyBatis-Plus配置
 mybatis-plus:
   mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.port.domain.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
-      logic-delete-field: deleted
-      logic-delete-value: 1
-      logic-not-delete-value: 0
+      id-type: auto
+
+# 日志级别
+logging:
+  level:
+    com.port: debug

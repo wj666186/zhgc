@@ -1,32 +1,42 @@
 package com.port.domain.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @TableName("t_container")
 public class Container {
+
     @TableId(type = IdType.AUTO)
     private Long id;
-    private String containerNo;
-    private String sizeType;
-    private String cargoType;
-    private Double weight;
-    private String status;
-    private String yardSlotCode;
-    private String destPort;
-    private Long vesselId;
-    private Long aiInspectId;
 
-    @TableField(fill = FieldFill.INSERT)
+    /** 箱号 */
+    private String containerNo;
+
+    /** 货物类型 */
+    private String cargoType;
+
+    /** 目的港口 */
+    private String destPort;
+
+    /** 重量 */
+    private BigDecimal weight;
+
+    /**
+     * 0 待分配
+     * 1 已分配堆场
+     * 2 破损锁定
+     */
+    private Integer status;
+
+    /** 绑定堆场仓位ID */
+    private Long yardSlotId;
+
     private LocalDateTime createTime;
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+
     private LocalDateTime updateTime;
-    @TableField(fill = FieldFill.INSERT)
-    private String createdBy;
-    private String approvedBy;
-    private String auditLog;
-    @TableLogic
-    private Integer deleted;
 }
