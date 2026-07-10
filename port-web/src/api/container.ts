@@ -1,29 +1,44 @@
 import request from '../utils/request'
 
-// 分页查询集装箱
+// 分页查询列表
 export function getContainerList(params: any) {
     return request({
-        url: '/container/list',
+        url: '/api/container/list',
         method: 'get',
         params
     })
 }
 
-// 自动分配堆场
-export function autoAllocateYard(containerNo: string) {
+// 编辑更新
+export function updateContainer(data: any) {
     return request({
-        url: '/yard/allocate',
-        method: 'post',
-        data: { containerNo }
+        url: '/api/container/update',
+        method: 'put',
+        data
     })
 }
 
-// 标记集装箱损坏锁定
+// 根据ID删除
+export function delContainer(id: number) {
+    return request({
+        url: `/api/container/${id}`,
+        method: 'delete'
+    })
+}
+
+// 新增集装箱
+export function addContainer(data: any) {
+    return request({
+        url: '/api/container/add',
+        method: 'post',
+        data
+    })
+}
+// 标记损坏锁定
 export function markDamageContainer(containerNo: string) {
     return request({
-        url: '/container/damage',
+        url: '/api/container/damage',
         method: 'put',
         data: { containerNo }
     })
 }
-

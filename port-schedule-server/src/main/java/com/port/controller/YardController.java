@@ -1,6 +1,6 @@
 package com.port.controller;
 
-import com.port.common.result.R;
+import com.port.common.result.Result;
 import com.port.domain.entity.Container;
 import com.port.service.YardAllocationService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +21,8 @@ public class YardController {
      * 自动分配堆场
      */
     @PostMapping("/allocate")
-    public R<String> allocate(@RequestBody Container container){
+    public Result<String> allocate(@RequestBody Container container){
         yardAllocationService.allocateYard(container.getContainerNo());
-        return R.ok("堆场分配完成");
+        return Result.success("堆场分配完成");
     }
 }

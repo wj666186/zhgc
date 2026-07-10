@@ -1,10 +1,10 @@
 package com.port.common.exception;
 
-import com.port.common.result.R;
+import com.port.common.result.Result;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-
+import com.port.common.result.Result;
 /**
  * 全局统一异常捕获处理器
  */
@@ -16,10 +16,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public R<String> handleException(Exception e){
+    public Result<String> handleException(Exception e){
         // 控制台打印异常堆栈，方便排查问题
         e.printStackTrace();
         // 向前端返回统一格式错误信息
-        return R.fail(e.getMessage());
+        return Result.fail(e.getMessage());
     }
 }

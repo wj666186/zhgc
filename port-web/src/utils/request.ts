@@ -1,20 +1,31 @@
-import axios from 'axios'
+import axios, { type AxiosResponse } from 'axios'
 
-const service = axios.create({
+// 创建axios实例
+const request = axios.create({
     baseURL: 'http://localhost:8080',
-    timeout: 12000
+    timeout: 10000
 })
 
-service.interceptors.request.use(config => {
+// 请求拦截器：自动携带token
+request.interceptors.request.use(config => {
+    const token = localStorage.getItem('token')
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
     return config
 })
 
-service.interceptors.response.use(
-    res => res.data,
-    err => {
-        console.error('接口请求异常', err)
+// 响应拦截器
+request.interceptors.response.use(
+    (res: AxiosResponse<any, any>) => res.data,
+    (err) => {
+        // 未登录强制跳转登录页
+        if (err.response?.data?.code === 401) {
+            localStorage.removeItem('token')
+            location.href = '/login'
+        }
         return Promise.reject(err)
     }
 )
 
-export default service
+export default request

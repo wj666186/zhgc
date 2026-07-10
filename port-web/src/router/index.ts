@@ -1,24 +1,19 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
+import Login from '../views/Login.vue'
+import Container from '../views/Container.vue'
 
-const routes: RouteRecordRaw[] = [
+const routes = [
     {
         path: '/',
-        redirect: '/dashboard'
+        redirect: '/login'
     },
     {
-        path: '/dashboard',
-        name: '首页看板',
-        component: () => import('../views/Dashboard.vue')
+        path: '/login',
+        component: Login
     },
     {
         path: '/container',
-        name: '集装箱管理',
-        component: () => import('../views/Container.vue')
-    },
-    {
-        path: '/yard',
-        name: '堆场调度',
-        component: () => import('../views/Yard.vue')
+        component: Container
     }
 ]
 
