@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import Container from '../views/Container.vue'
+// 导入首页看板组件
+import Dashboard from '../views/Dashboard.vue'
 
 const routes = [
     {
@@ -10,6 +12,11 @@ const routes = [
     {
         path: '/login',
         component: Login
+    },
+    // 新增首页看板路由
+    {
+        path: '/dashboard',
+        component: Dashboard
     },
     {
         path: '/container',
