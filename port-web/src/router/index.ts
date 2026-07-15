@@ -3,6 +3,8 @@ import Login from '../views/Login.vue'
 import Container from '../views/Container.vue'
 // 导入首页看板组件
 import Dashboard from '../views/Dashboard.vue'
+// 导入AI识别页面
+import AiRecognition from '../views/AiRecognition.vue'
 
 const routes = [
     {
@@ -21,6 +23,12 @@ const routes = [
     {
         path: '/container',
         component: Container
+    },
+    // AI集装箱识别模块路由
+    {
+        path: '/aiRecognition',
+        name: 'AiRecognition',
+        component: AiRecognition
     }
 ]
 

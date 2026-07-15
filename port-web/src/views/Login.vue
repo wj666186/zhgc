@@ -33,7 +33,7 @@ const doLogin = async () => {
             localStorage.setItem('username', res.data.username)
             // ❌ 错误：router.push('/api/login')
             // ✅ 正确：跳前端页面路由
-            await router.push('/container')
+            await router.push('/dashboard')
         } else {
             alert(res.msg || '用户名或密码错误')
         }

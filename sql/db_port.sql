@@ -31,16 +31,17 @@ CREATE TABLE t_yard_slot (
                              UNIQUE uk_slot_code(slot_code)
 ) ENGINE=InnoDB COMMENT='堆场箱位';
 
-CREATE TABLE t_ai_inspect (
-                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                              container_no VARCHAR(20),
-                              camera_id VARCHAR(30),
-                              damage_level VARCHAR(10),
-                              stack_status VARCHAR(20),
-                              frame_url VARCHAR(255),
-                              inspect_cost_ms INT,
-                              create_time DATETIME DEFAULT NOW()
-) ENGINE=InnoDB COMMENT='AI质检记录';
+CREATE TABLE `ai_inspect_record` (
+                                     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
+                                     inspect_no VARCHAR(64) NOT NULL UNIQUE COMMENT '检测单号',
+                                     container_no VARCHAR(32) NOT NULL COMMENT '集装箱编号',
+                                     image_name VARCHAR(128) COMMENT '图片文件名',
+                                     damage_result VARCHAR(256) COMMENT '破损描述',
+                                     damage_level VARCHAR(16) COMMENT '破损等级',
+                                     confidence DECIMAL(18,16) COMMENT '置信度',
+                                     cost_ms INT COMMENT '接口耗时ms',
+                                     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI集装箱破损检测记录表';
 
 CREATE TABLE t_vessel_plan (
                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
