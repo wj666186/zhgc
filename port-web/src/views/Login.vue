@@ -16,29 +16,53 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import { loginApi } from '../api/login'
+
+interface LoginData {
+    token: string
+    username: string
+    role: string
+}
+interface LoginResult {
+    code: number
+    data: LoginData
+    msg?: string
+}
 
 const router = useRouter()
 const username = ref('')
 const password = ref('')
 
+// 彻底移除onMounted页面自动跳转逻辑，只能点击按钮登录跳转
 const doLogin = async () => {
+    if (!username.value.trim()) {
+        ElMessage.warning('请输入用户名')
+        return
+    }
+    if (!password.value.trim()) {
+        ElMessage.warning('请输入密码')
+        return
+    }
+
     try {
         const res = await loginApi({
             username: username.value,
             password: password.value
-        })
+        }) as LoginResult
+
         if (res.code === 200) {
             localStorage.setItem('token', res.data.token)
             localStorage.setItem('username', res.data.username)
-            // ❌ 错误：router.push('/api/login')
-            // ✅ 正确：跳前端页面路由
+            localStorage.setItem('userRole', res.data.role)
+            ElMessage.success('登录成功')
+            // 仅登录请求成功后手动跳转首页
             await router.push('/dashboard')
         } else {
-            alert(res.msg || '用户名或密码错误')
+            ElMessage.error(res.msg || '用户名或密码错误')
         }
     } catch (err) {
-        alert('请求失败，请检查后端服务是否启动')
+        ElMessage.error('请求失败，请检查后端服务是否正常启动')
         console.error('登录接口异常：', err)
     }
 }
@@ -74,5 +98,9 @@ button {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 16px;
+}
+button:active {
+    background: #337ecc;
 }
 </style>

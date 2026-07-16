@@ -9,7 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.annotation.Bean;
-
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @SpringBootApplication
 @MapperScan("com.port.mapper")
 @EnableAsync
@@ -18,8 +19,6 @@ public class PortScheduleServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PortScheduleServerApplication.class, args);
 	}
-
-	// MyBatis-Plus分页插件
 	@Bean
 	public MybatisPlusInterceptor mybatisPlusInterceptor() {
 		MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();

@@ -1,31 +1,26 @@
-import axios, { type AxiosResponse } from 'axios'
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
-// 创建axios实例
-const request = axios.create({
+const service = axios.create({
     baseURL: 'http://localhost:8080',
     timeout: 10000
 })
 
-// 请求拦截器：自动携带token
-request.interceptors.request.use(config => {
+// 请求拦截自动带上token
+service.interceptors.request.use(config => {
     const token = localStorage.getItem('token')
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`
+        config.headers.Authorization = token
     }
     return config
 })
 
-// 响应拦截器
-request.interceptors.response.use(
-    (res: AxiosResponse<any, any>) => res.data,
-    (err) => {
-        // 未登录强制跳转登录页
-        if (err.response?.data?.code === 401) {
-            localStorage.removeItem('token')
-            location.href = '/login'
-        }
-        return Promise.reject(err)
-    }
-)
+// 响应拦截直接剥离外层data
+service.interceptors.response.use(res => {
+    return res.data
+}, err => {
+    ElMessage.error('网络请求异常')
+    return Promise.reject(err)
+})
 
-export default request
+export default service
