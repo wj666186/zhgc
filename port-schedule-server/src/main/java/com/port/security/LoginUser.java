@@ -4,11 +4,16 @@ import com.port.domain.entity.SysUser;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 
 @Data
-public class LoginUser implements UserDetails {
+public class LoginUser implements UserDetails, Serializable {
+
+    // 序列化版本号，固定防止反序列化版本冲突
+    private static final long serialVersionUID = 1L;
 
     // 成员变量名称统一为 sysUser
     private SysUser sysUser;

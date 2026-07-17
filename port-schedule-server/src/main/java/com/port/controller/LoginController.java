@@ -5,6 +5,7 @@ import com.port.dto.LoginDTO;
 import com.port.dto.LoginVO;
 import com.port.security.LoginUser;
 import jakarta.annotation.Resource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api")
@@ -22,22 +24,27 @@ public class LoginController {
     @Resource
     private AuthenticationManager authenticationManager;
 
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
+
     @PostMapping("/login")
     public Result<LoginVO> login(@RequestBody LoginDTO loginDTO) {
-        // 1. 封装账号密码到认证对象
+        // 1. 封装账号密码认证
         UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
-        // 2. 调用Security自动从sys_user表查询并校验密码
+        // 2. 认证校验
         Authentication authentication = authenticationManager.authenticate(authToken);
-        System.out.println("前端收到用户名："+loginDTO.getUsername());
-        System.out.println("前端收到原始密码：【"+loginDTO.getPassword()+"】");
-        // 注入Security认证管理器
-        // 3. 获取登录用户信息（包含角色role）
+
+        // 3. 获取封装好的LoginUser对象
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        // 4. 生成Token
-        String token = UUID.randomUUID().toString();
-        System.out.println("前端接收密码："+loginDTO.getPassword());
-        // 5. 封装返回VO，携带用户名+角色+令牌
+
+        // 4. 生成唯一令牌
+        String token = UUID.randomUUID().toString().replace("-", "");
+
+        // 5. Token作为key，LoginUser存入Redis，有效期30分钟
+        redisTemplate.opsForValue().set("login:token:" + token, loginUser, 30, TimeUnit.MINUTES);
+
+        // 6. 封装返回前端数据
         LoginVO vo = new LoginVO();
         vo.setToken(token);
         vo.setUsername(loginUser.getSysUser().getUsername());

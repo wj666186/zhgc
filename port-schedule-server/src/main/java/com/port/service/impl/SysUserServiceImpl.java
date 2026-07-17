@@ -33,7 +33,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         }
         SysUser user = new SysUser();
         user.setUsername(dto.getUsername());
-        // 密码加密
+        // 密码加密存储
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setRole(dto.getRole());
         this.save(user);
@@ -45,7 +45,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         if (user == null) {
             throw new RuntimeException("用户不存在");
         }
-        // 改用户名则查重
+        // 修改用户名时查重
         if (!user.getUsername().equals(dto.getUsername())) {
             LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
             wrapper.eq(SysUser::getUsername, dto.getUsername());
@@ -55,8 +55,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         }
         user.setUsername(dto.getUsername());
         user.setRole(dto.getRole());
-        // 密码不为空才更新密码
-        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+        // 仅当传入密码非空时加密更新密码
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
         this.updateById(user);

@@ -6,7 +6,6 @@
         <!-- 新增AI智能识别菜单 -->
         <el-menu-item index="/aiRecognition">AI智能识别</el-menu-item>
     </el-menu>
-    <router-view />
 </template>
 
 <script setup lang="ts">

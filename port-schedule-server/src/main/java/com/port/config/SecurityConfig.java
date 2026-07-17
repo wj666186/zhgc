@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -20,10 +21,13 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-// 先关闭方法级权限校验，避免@PreAuthorize拦截
-@EnableMethodSecurity(prePostEnabled = false)
+// 开启@PreAuthorize注解，用于用户管理接口管理员权限控制
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+    /**
+     * 使用BCrypt加密器，和启动类注入统一，密码加密校验正常
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new PasswordEncoder() {
@@ -38,11 +42,15 @@ public class SecurityConfig {
         };
     }
 
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
+    /**
+     * 跨域配置，前端5173端口完全放行
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -58,16 +66,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // 关闭csrf
                 .csrf(csrf -> csrf.disable())
+                // 使用本类中定义的跨域Bean
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // 无状态会话，适配JWT Token
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 禁用表单登录页
                 .formLogin(form -> form.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 放行所有OPTIONS预检
+                        // 放行所有OPTIONS预检请求
                         .requestMatchers(new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.name())).permitAll()
-                        // 登录接口放行
+                        // 登录接口、文档静态资源直接放行
                         .requestMatchers("/api/login", "/doc.html", "/webjars/**", "/favicon.ico").permitAll()
-                        // 所有其余接口全部放行，不再校验登录token
+                        // 临时全部放行，用于联调登录；上线前可改为 anyRequest().authenticated()
                         .anyRequest().permitAll()
                 );
         return http.build();

@@ -12,6 +12,7 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/',
         component: () => import('@/views/Layout.vue'),
+        redirect: '/dashboard', // 默认进入首页看板
         children: [
             {
                 path: 'dashboard',
@@ -49,8 +50,9 @@ const routes: RouteRecordRaw[] = [
             }
         ]
     },
+    // 404兜底路由必须放在数组最后一项
     {
-        path: '/:pathMatch(.*)',
+        path: '/:pathMatch(.*)*',
         redirect: '/login'
     }
 ]
@@ -60,13 +62,21 @@ const router = createRouter({
     routes
 })
 
+// 强化全局前置守卫，杜绝登录页嵌套Layout、无凭证滞留后台页面
 router.beforeEach((to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
     const token = localStorage.getItem('token')
+    // 访问登录页，直接放行，不校验登录凭证
     if (to.path === '/login') {
         next()
-    } else {
-        token ? next() : next('/login')
+        return
     }
+    // 非登录页面，无token强制跳转登录页
+    if (!token) {
+        next('/login')
+        return
+    }
+    // 有登录凭证，正常放行访问后台页面
+    next()
 })
 
 export default router
