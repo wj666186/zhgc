@@ -6,51 +6,65 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/login',
         name: 'Login',
-        component: () => import('@/views/Login.vue')
+        component: () => import('@/views/Login.vue'),
+        meta: { title: '系统登录' }
     },
-    // 父布局Layout，所有后台页面作为子路由
+    // 后台整体布局父路由
     {
         path: '/',
         component: () => import('@/views/Layout.vue'),
-        redirect: '/dashboard', // 默认进入首页看板
+        redirect: '/dashboard',
         children: [
             {
                 path: 'dashboard',
                 name: 'Dashboard',
-                component: () => import('@/views/Dashboard.vue')
+                component: () => import('@/views/Dashboard.vue'),
+                meta: { title: '首页看板' }
             },
             {
                 path: 'container',
                 name: 'Container',
-                component: () => import('@/views/Container.vue')
+                component: () => import('@/views/Container.vue'),
+                meta: { title: '集装箱信息管理' }
             },
             {
                 path: 'yard',
                 name: 'Yard',
-                component: () => import('@/views/Yard.vue')
+                component: () => import('@/views/Yard.vue'),
+                meta: { title: '堆场调度管理' }
             },
             {
                 path: 'aiRecognition',
                 name: 'AiRecognition',
-                component: () => import('@/views/AiRecognition.vue')
+                component: () => import('@/views/AiRecognition.vue'),
+                meta: { title: 'AI视觉巡检' }
             },
             {
                 path: 'userManage',
                 name: 'UserManage',
                 component: () => import('@/views/UserManage.vue'),
+                meta: { title: '用户管理' },
+                // 管理员专属页面路由守卫
                 beforeEnter: (_to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
                     const role = localStorage.getItem('userRole')
                     if (role === 'admin') {
                         next()
                     } else {
-                        ElMessage.warning('仅管理员可访问')
+                        ElMessage.warning('仅管理员账号可访问用户管理页面')
                         next(from.path)
                     }
                 }
+            },
+            {
+                path: 'digitalTwin',
+                name: 'DigitalTwin',
+                component: () => import('@/views/DigitalTwin.vue'),
+                meta: { title: '数字孪生港口时空视图' }
             }
+
         ]
     },
-    // 404兜底路由必须放在数组最后一项
+    // 全局404页面兜底
     {
         path: '/:pathMatch(.*)*',
         redirect: '/login'
@@ -62,20 +76,20 @@ const router = createRouter({
     routes
 })
 
-// 强化全局前置守卫，杜绝登录页嵌套Layout、无凭证滞留后台页面
+// 全局登录鉴权前置守卫
 router.beforeEach((to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
     const token = localStorage.getItem('token')
-    // 访问登录页，直接放行，不校验登录凭证
+    // 访问登录页直接放行
     if (to.path === '/login') {
         next()
         return
     }
-    // 非登录页面，无token强制跳转登录页
+    // 未登录无token，强制跳转登录
     if (!token) {
         next('/login')
         return
     }
-    // 有登录凭证，正常放行访问后台页面
+    // 已登录正常访问
     next()
 })
 

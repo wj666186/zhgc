@@ -1,52 +1,53 @@
 <template>
-    <div style="padding: 24px; min-height: calc(100vh - 60px); box-sizing: border-box;">
-        <div style="text-align: center; margin-bottom: 20px; position: relative;">
-            <h2 style="font-size: 32px; font-weight: bold; color: #193770; margin: 0;">用户信息管理</h2>
+    <div class="user-manage-wrap">
+        <div class="page-header">
+            <h2>用户信息管理</h2>
             <el-button
                 type="primary"
                 icon="Plus"
                 @click="openAddDialog"
-                style="position: absolute; right: 0; top: 5px; background: #407bff; border: none;"
+                class="btn-add-user"
             >
                 新增用户
             </el-button>
         </div>
 
-        <span style="display: block; text-align: right; color: #666; font-size: 13px; margin-bottom: 12px;">
-      共 {{ tableData.length }} 条用户数据
-    </span>
+        <div class="page-count">
+            共 {{ tableData.length }} 条用户数据
+        </div>
 
-        <!-- 重点修改：header-cell-style 改为绑定返回样式对象的函数 -->
         <el-table
             :data="tableData"
             border
             stripe
-            style="width: 100%;"
-            element-loading="loading"
+            class="user-table"
+            v-loading="loading"
             :header-cell-style="tableHeaderStyle"
         >
-            <el-table-column label="ID" prop="id" width="80" align="center" />
-            <el-table-column label="用户名" prop="username" align="center" />
-            <el-table-column label="用户角色" align="center">
+            <!-- 改用最小像素宽度，禁止百分比，解决文字竖排错乱 -->
+            <el-table-column label="ID" prop="id" min-width="70" align="center" />
+            <el-table-column label="用户名" prop="username" min-width="100" align="center" />
+            <el-table-column label="用户角色" min-width="130" align="center">
                 <template #default="scope">
                     <el-tag
                         :type="scope.row.role === 'admin' ? 'primary' : 'info'"
                         size="small"
                         effect="light"
+                        :color="scope.row.role === 'admin' ? '#11616B' : '#7BBDB6'"
+                        :text-color="scope.row.role === 'admin' ? '#ffffff' : '#08383f'"
                     >
                         {{ scope.row.role === 'admin' ? '系统管理员' : '普通操作员' }}
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column label="创建时间" prop="createTime" align="center" min-width="180" />
-            <el-table-column label="操作" width="180" align="center">
+            <el-table-column label="创建时间" prop="createTime" min-width="180" align="center" />
+            <el-table-column label="操作" min-width="170" align="center">
                 <template #default="scope">
                     <el-button
                         size="small"
-                        type="primary"
                         plain
                         @click="openEditDialog(scope.row)"
-                        style="margin-right: 8px;"
+                        class="btn-edit-user"
                     >
                         编辑
                     </el-button>
@@ -57,11 +58,16 @@
                         confirm-button-text="确认删除"
                         cancel-button-text="取消"
                         icon="WarningFilled"
-                        icon-color="#E64340"
+                        icon-color="#DC8B70"
                         @confirm="confirmDelete(scope.row.id)"
                     >
                         <template #reference>
-                            <el-button size="small" type="danger" plain @click="handleDeleteClick(scope.row)">
+                            <el-button
+                                size="small"
+                                plain
+                                @click="handleDeleteClick(scope.row)"
+                                class="btn-del-user"
+                            >
                                 删除
                             </el-button>
                         </template>
@@ -78,6 +84,13 @@
                 <el-form-item label="登录密码" v-if="!form.id" required>
                     <el-input v-model="form.password" show-password placeholder="新增用户必须填写密码" />
                 </el-form-item>
+                <el-form-item label="确认密码" v-if="!form.id" required>
+                    <el-input
+                        v-model="form.confirmPassword"
+                        show-password
+                        placeholder="请再次输入登录密码"
+                    />
+                </el-form-item>
                 <el-form-item label="账号角色">
                     <el-select v-model="form.role" placeholder="请选择角色" style="width: 100%;">
                         <el-option label="系统管理员" value="admin" />
@@ -87,8 +100,8 @@
             </el-form>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button @click="dialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="submitForm">确认提交</el-button>
+                    <el-button @click="dialogVisible = false" class="btn-cancel-dialog">取消</el-button>
+                    <el-button type="primary" @click="submitForm" class="btn-confirm-dialog">确认提交</el-button>
                 </div>
             </template>
         </el-dialog>
@@ -107,15 +120,16 @@ const form = ref({
     id: null as number | null,
     username: '',
     password: '',
+    confirmPassword: '',
     role: 'user'
 })
 const loginUserRole = ref(localStorage.getItem('userRole') || '')
 
-// 表头样式函数，返回标准样式对象，彻底解决属性类型报错
+// 表头莫兰迪深色样式
 const tableHeaderStyle = () => {
     return {
-        backgroundColor: '#2662d9',
-        color: '#fff',
+        backgroundColor: '#11616B',
+        color: '#EBF4F8',
         fontWeight: 'bold',
         textAlign: 'center'
     }
@@ -126,36 +140,45 @@ const loadUserList = async () => {
     try {
         const res = await getUserList()
         tableData.value = res.data
-    } catch (err){
-    ElMessage.error('列表加载失败')
-}finally {
-    loading.value = false
+    } catch (err) {
+        ElMessage.error('列表加载失败')
+    } finally {
+        loading.value = false
+    }
 }
-}
-
 
 onMounted(() => {
     loadUserList()
 })
 
 const openAddDialog = () => {
-    form.value = { id: null, username: '', password: '', role: 'user' }
+    form.value = { id: null, username: '', password: '', confirmPassword: '', role: 'user' }
     dialogVisible.value = true
 }
 
+
 const openEditDialog = (row: any) => {
-    form.value = { ...row, password: '' }
+    form.value = { ...row, password: '', confirmPassword: '' }
     dialogVisible.value = true
 }
+
 
 const submitForm = async () => {
     if (!form.value.username.trim()) {
         ElMessage.warning('用户名不能为空')
         return
     }
-    if (!form.value.id && !form.value.password?.trim()) {
-        ElMessage.warning('新增用户必须填写登录密码')
-        return
+    // 新增用户校验密码规则
+    if (!form.value.id) {
+        if (!form.value.password?.trim()) {
+            ElMessage.warning('新增用户必须填写登录密码')
+            return
+        }
+        // 校验两次密码是否一致
+        if (form.value.password !== form.value.confirmPassword) {
+            ElMessage.warning('两次输入的密码不一致，请重新填写')
+            return
+        }
     }
 
     try {
@@ -167,11 +190,13 @@ const submitForm = async () => {
             ElMessage.success('用户新增成功')
         }
         dialogVisible.value = false
-        loadUserList()
+        form.value.confirmPassword = '' // 提交后清空确认密码
+        await loadUserList()
     } catch (err: any) {
         ElMessage.error(err.msg || '操作请求失败')
     }
 }
+
 
 const handleDeleteClick = (row: any) => {
     if (row.username === 'admin') {
@@ -184,7 +209,7 @@ const confirmDelete = async (delId: number) => {
     try {
         await deleteUser(delId)
         ElMessage.success('用户删除成功')
-        loadUserList()
+        await loadUserList()
     } catch (err: any) {
         ElMessage.error(err.msg || '删除失败')
     }
@@ -192,7 +217,92 @@ const confirmDelete = async (delId: number) => {
 </script>
 
 <style scoped>
+.user-manage-wrap {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    background-color: transparent;
+    overflow-x: hidden;
+}
+
+
+.page-header {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.page-header h2 {
+    font-size: 32px;
+    font-weight: bold;
+    color: #11616B;
+    margin: 0;
+}
+
+.btn-add-user {
+    position: absolute;
+    right: 0;
+    top: 5px;
+    background: #11616B;
+    border: none;
+    --el-color-primary: #11616B;
+}
+
+.page-count {
+    display: block;
+    text-align: right;
+    color: #444;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.user-table {
+    width: 100%;
+    background: #fff;
+    table-layout: auto;
+}
+
+/* 编辑按钮配色 */
+.btn-edit-user {
+    margin-right: 8px;
+    color: #11616B;
+    border-color: #7BBDB6;
+}
+.btn-edit-user:hover {
+    color: #fff;
+    background-color: #7BBDB6;
+    border-color: #7BBDB6;
+}
+
+/* 删除按钮配色 */
+.btn-del-user {
+    color: #DC8B70;
+    border-color: #DC8B70;
+}
+.btn-del-user:hover {
+    color: #fff;
+    background-color: #DC8B70;
+    border-color: #DC8B70;
+}
+
 .dialog-footer {
     text-align: right;
+    gap: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-cancel-dialog {
+    background: #FED9CD;
+    color: #663c30;
+    border: none;
+}
+
+.btn-confirm-dialog {
+    background: #11616B;
+    border: none;
+    --el-color-primary: #11616B;
 }
 </style>

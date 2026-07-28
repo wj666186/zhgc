@@ -15,6 +15,15 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/**");
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/user/login",
+                        "/api/container/twin",
+                        "/api/container/load/ship/**",
+                        "/api/container/unload/yard",
+                        "/api/container/savePos",
+                        "/ws/container/**"   // 放行WebSocket握手地址
+                );
     }
+
 }

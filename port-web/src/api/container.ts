@@ -1,72 +1,77 @@
 import request from '../utils/request'
 
-// 通用后端返回格式
-interface BaseResp<T = any> {
-    code: number
-    data: T
-    msg: string
+// 状态类型
+export type ContainerStatus = 0 | 1 | 2 | 3
+
+// 集装箱实体类型 和后端字段一一对应
+export interface ContainerItem {
+    id: number
+    containerNo: string
+    cargoType: string
+    destPort: string
+    weight: number
+    status: ContainerStatus
+    yardSlotId: number | null
+    areaNo: number | null
+    loadStatus: 0 | 1
+    createTime: string
+    updateTime: string
 }
 
-// 分页结构
-interface PageResult<T> {
+// 堆场仓位实体类型
+export interface YardSlotItem {
+    id: number
+    areaCode: string
+    rowNo: number
+    colNo: number
+    maxLayer: number
+    usedLayer: number
+    lockContainerId: number | null
+}
+
+// 分页返回结构
+interface PageRes<T> {
     records: T[]
     total: number
-    current: number
     size: number
+    current: number
 }
 
-// 集装箱实体
-export interface ContainerItem {
-    id?: number
-    containerNo: string
-    goodsType: string
-    targetPort: string
-    weight: number
-    status: string
-    storeSlot?: string
-    isDamage?: number
-}
-
-// 分页查询列表
-export function getContainerList(params: any): Promise<BaseResp<PageResult<ContainerItem>>> {
-    return request({
-        url: '/api/container/list',
-        method: 'get',
-        params
+// 1. 分页查询集装箱列表
+export const getContainerList = (pageNum: number, pageSize: number) => {
+    return request.get<PageRes<ContainerItem>>('/api/container/list', {
+        params: { pageNum, pageSize }
     })
 }
 
-// 编辑更新
-export function updateContainer(data: ContainerItem): Promise<BaseResp> {
-    return request({
-        url: '/api/container/update',
-        method: 'put',
-        data
+// 2. 新增集装箱
+export const addContainer = (data: Omit<ContainerItem, 'id' | 'createTime' | 'updateTime'>) => {
+    return request.post('/api/container/add', data)
+}
+
+// 3. 编辑修改集装箱
+export const updateContainer = (data: Partial<ContainerItem>) => {
+    return request.put('/api/container/update', data)
+}
+
+// 4. 删除集装箱
+export const delContainer = (id: number) => {
+    return request.delete(`/api/container/${id}`)
+}
+
+// 5. 根据箱号分配堆场仓位
+export const allocateYardByNo = (containerNo: string) => {
+    return request.post('/yard/allocate', null, {
+        params: { containerNo }
     })
 }
 
-// 根据ID删除
-export function delContainer(id: number): Promise<BaseResp> {
-    return request({
-        url: `/api/container/${id}`,
-        method: 'delete'
-    })
+// 6. 数字孪生视图+全局仓库：拉取全部集装箱（无分页）
+export const getAllContainer = () => {
+    return request.get<ContainerItem[]>('/api/container/twin')
 }
 
-// 新增集装箱
-export function addContainer(data: Omit<ContainerItem, 'id'>): Promise<BaseResp> {
-    return request({
-        url: '/api/container/add',
-        method: 'post',
-        data
-    })
-}
-
-// 标记损坏锁定
-export function markDamageContainer(containerNo: string): Promise<BaseResp> {
-    return request({
-        url: '/api/container/damage',
-        method: 'put',
-        data: { containerNo }
-    })
+// 7. 获取所有堆场仓位数据
+export const getAllYardSlot = () => {
+    return request.get<YardSlotItem[]>('/api/yard/list')
 }

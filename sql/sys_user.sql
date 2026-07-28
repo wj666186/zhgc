@@ -30,4 +30,4 @@ VALUES
 USE db_port;
 UPDATE sys_user SET password = '123456' WHERE username = 'admin';
 -- 另外两个测试账号一并改成明文密码
-UPDATE sys_user SET password = '123456' WHERE username IN ('user01','user02');
+UPDATE sys_user SET password = '123456' WHERE username IN ('user01','user02');6696966

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.port.mapper.ContainerMapper">
+    <!-- 更新集装箱拖拽坐标 -->
+    <update id="updateContainerXYZPos">
+        UPDATE t_container
+        SET x_pos = #{x},
+            z_pos = #{z}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 集装箱装船：修改装载状态、清空堆场区域、更新时间 -->
+    <update id="loadToShip">
+        UPDATE t_container
+        SET load_status = 1,
+            area_no = NULL,
+            update_time = NOW()
+        WHERE id = #{containerId}
+    </update>
+
+    <!-- 集装箱卸船：切回堆场状态，回填区域编号 -->
+    <update id="unloadFromShip">
+        UPDATE t_container
+        SET load_status = 0,
+            area_no = #{areaNo},
+            update_time = NOW()
+        WHERE id = #{containerId}
+    </update>
+
+</mapper>

@@ -52,3 +52,11 @@ CREATE TABLE t_vessel_plan (
                                status VARCHAR(20),
                                create_time DATETIME DEFAULT NOW()
 ) ENGINE=InnoDB COMMENT='船舶靠泊计划';
+USE db_port;
+ALTER TABLE t_container MODIFY COLUMN status TINYINT DEFAULT 0 COMMENT '0待分配 1已分配堆场 2破损锁定 3已装船';
+-- 集装箱表新增三维摆放坐标字段
+ALTER TABLE t_container ADD COLUMN x_pos DOUBLE DEFAULT 0 COMMENT '三维场景X坐标';
+ALTER TABLE t_container ADD COLUMN z_pos DOUBLE DEFAULT 0 COMMENT '三维场景Z坐标';
+ALTER TABLE t_container
+    CHANGE COLUMN x_pos x DECIMAL(12,4),
+    CHANGE COLUMN z_pos z DECIMAL(12,4);
