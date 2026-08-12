@@ -199,6 +199,8 @@ const submitEdit = async () => {
     try {
         await updateContainer(editForm.value)
         editVisible.value = false
+        // 实时刷新列表
+        await containerStore.refreshAllData()
         alert('编辑成功')
     } catch (err: any) {
         alert('编辑失败：' + (err.message || '服务异常'))
@@ -210,6 +212,8 @@ const handleDelete = async (id: number) => {
     if (!confirm('确定要删除该集装箱数据？删除后无法恢复')) return
     try {
         await delContainer(id)
+        // 实时刷新列表
+        await containerStore.refreshAllData()
         alert('删除成功')
     } catch (err: any) {
         alert('删除失败：' + (err.message || '服务异常'))
@@ -220,6 +224,8 @@ const handleDelete = async (id: number) => {
 const handleAllocate = async (row: ContainerItem) => {
     try {
         await allocateYardByNo(row.containerNo)
+        // 实时刷新列表
+        await containerStore.refreshAllData()
         alert('堆场分配完成')
     } catch (err: any) {
         alert('分配失败：' + (err.message || '暂无空闲仓位/箱子破损禁止分配'))
@@ -250,6 +256,8 @@ const submitAdd = async () => {
     try {
         await addContainer(addForm.value)
         addVisible.value = false
+        // 实时刷新列表
+        await containerStore.refreshAllData()
         alert('新增集装箱成功')
     } catch (err: any) {
         alert('新增失败：' + (err.message || '服务异常'))

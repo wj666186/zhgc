@@ -1,0 +1,9 @@
+flask>=2.3.0
+flask-cors>=4.0.0
+numpy>=1.24.0
+Pillow>=10.0.0
+# ModelScope（可选，需要时安装）
+# modelscope>=1.9.0
+# torch>=2.0.0
+# torchvision>=0.15.0
+# mmpretrain>=1.0.0

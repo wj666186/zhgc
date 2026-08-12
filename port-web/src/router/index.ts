@@ -9,7 +9,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/Login.vue'),
         meta: { title: '系统登录' }
     },
-    // 后台整体布局父路由
     {
         path: '/',
         component: () => import('@/views/Layout.vue'),
@@ -20,6 +19,12 @@ const routes: RouteRecordRaw[] = [
                 name: 'Dashboard',
                 component: () => import('@/views/Dashboard.vue'),
                 meta: { title: '首页看板' }
+            },
+            {
+                path: 'vessel',
+                name: 'VesselPlan',
+                component: () => import('@/views/VesselPlan.vue'),
+                meta: { title: '船舶计划管理' }
             },
             {
                 path: 'container',
@@ -34,17 +39,46 @@ const routes: RouteRecordRaw[] = [
                 meta: { title: '堆场调度管理' }
             },
             {
+                path: 'truck',
+                name: 'TruckDispatch',
+                component: () => import('@/views/TruckDispatch.vue'),
+                meta: { title: '集卡调度管理' }
+            },
+            {
+                path: 'gate',
+                name: 'GateManage',
+                component: () => import('@/views/GateManage.vue'),
+                meta: { title: '闸口无感通行' }
+            },
+            {
+                path: 'equipment',
+                name: 'EquipmentManage',
+                component: () => import('@/views/EquipmentManage.vue'),
+                meta: { title: '设备管控' }
+            },
+            {
                 path: 'aiRecognition',
                 name: 'AiRecognition',
                 component: () => import('@/views/AiRecognition.vue'),
-                meta: { title: 'AI视觉巡检' }
+                meta: { title: 'AI智能识别' }
+            },
+            {
+                path: 'digitalTwin',
+                name: 'DigitalTwin',
+                component: () => import('@/views/DigitalTwin.vue'),
+                meta: { title: '数字孪生港口时空视图' }
+            },
+            {
+                path: 'command',
+                name: 'CommandCenter',
+                component: () => import('@/views/CommandCenter.vue'),
+                meta: { title: '实时协同指挥' }
             },
             {
                 path: 'userManage',
                 name: 'UserManage',
                 component: () => import('@/views/UserManage.vue'),
                 meta: { title: '用户管理' },
-                // 管理员专属页面路由守卫
                 beforeEnter: (_to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
                     const role = localStorage.getItem('userRole')
                     if (role === 'admin') {
@@ -56,15 +90,13 @@ const routes: RouteRecordRaw[] = [
                 }
             },
             {
-                path: 'digitalTwin',
-                name: 'DigitalTwin',
-                component: () => import('@/views/DigitalTwin.vue'),
-                meta: { title: '数字孪生港口时空视图' }
+                path: 'operationLog',
+                name: 'OperationLog',
+                component: () => import('@/views/OperationLog.vue'),
+                meta: { title: '审计日志' }
             }
-
         ]
     },
-    // 全局404页面兜底
     {
         path: '/:pathMatch(.*)*',
         redirect: '/login'
@@ -76,20 +108,16 @@ const router = createRouter({
     routes
 })
 
-// 全局登录鉴权前置守卫
 router.beforeEach((to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
     const token = localStorage.getItem('token')
-    // 访问登录页直接放行
     if (to.path === '/login') {
         next()
         return
     }
-    // 未登录无token，强制跳转登录
     if (!token) {
         next('/login')
         return
     }
-    // 已登录正常访问
     next()
 })
 

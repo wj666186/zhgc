@@ -9,6 +9,11 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/db_port?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
     password: wj200587
+  # 文件上传大小限制
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   # 开启mapper热加载
   devtools:
     restart:

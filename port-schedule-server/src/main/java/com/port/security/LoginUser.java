@@ -1,7 +1,10 @@
 package com.port.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.port.domain.entity.SysUser;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,6 +13,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Data
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginUser implements UserDetails, Serializable {
 
     // 序列化版本号，固定防止反序列化版本冲突
@@ -41,6 +46,7 @@ public class LoginUser implements UserDetails, Serializable {
 
     // 权限空实现
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();
     }

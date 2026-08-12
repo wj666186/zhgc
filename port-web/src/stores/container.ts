@@ -11,10 +11,16 @@ export const useContainerStore = defineStore('container', () => {
 
     // 全局刷新：集装箱+仓位全部重载
     const refreshAllData = async (): Promise<void> => {
-        const containerRes = await getAllContainer()
-        const slotRes = await getAllYardSlot()
-        containerList.value = containerRes.data
-        slotList.value = slotRes.data
+        try {
+            const containerRes: any = await getAllContainer()
+            const slotRes: any = await getAllYardSlot()
+            // request.ts已剥离Result外层，直接返回data本身（数组）
+            containerList.value = Array.isArray(containerRes) ? containerRes : (containerRes?.data || containerRes?.records || [])
+            slotList.value = Array.isArray(slotRes) ? slotRes : (slotRes?.data || slotRes?.records || [])
+        } catch (e) {
+            containerList.value = []
+            slotList.value = []
+        }
     }
 
     return {

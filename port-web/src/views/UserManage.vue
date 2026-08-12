@@ -13,7 +13,7 @@
         </div>
 
         <div class="page-count">
-            共 {{ tableData.length }} 条用户数据
+            共 {{ tableData?.length || 0 }} 条用户数据
         </div>
 
         <el-table
@@ -138,9 +138,11 @@ const tableHeaderStyle = () => {
 const loadUserList = async () => {
     loading.value = true
     try {
-        const res = await getUserList()
-        tableData.value = res.data
+        const res: any = await getUserList()
+        // 确保tableData始终是数组，避免undefined.length报错
+        tableData.value = Array.isArray(res) ? res : (res?.data || res?.records || [])
     } catch (err) {
+        tableData.value = []
         ElMessage.error('列表加载失败')
     } finally {
         loading.value = false
