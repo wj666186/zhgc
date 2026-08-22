@@ -8,6 +8,7 @@ import com.port.domain.entity.Rtg;
 import com.port.service.QuayCraneService;
 import com.port.service.RtgService;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/equipment")
+@PreAuthorize("authentication.principal.getRole() == 'admin' or authentication.principal.getRole() == 'operator'")
 public class EquipmentController {
 
     @Resource

@@ -1,9 +1,20 @@
+# Web 框架
 flask>=2.3.0
 flask-cors>=4.0.0
+
+# 数值与图像处理
 numpy>=1.24.0
 Pillow>=10.0.0
-# ModelScope（可选，需要时安装）
-# modelscope>=1.9.0
-# torch>=2.0.0
-# torchvision>=0.15.0
+
+# 深度学习框架（已安装 CPU 版，GPU 版请自行替换）
+torch>=2.0.0
+torchvision>=0.15.0
+
+# OCR：魔搭 ModelScope（damo/cv_ocr_det-dragon + damo/cv_ocr_rec-dragon）
+# Python 3.8 请使用 1.9.x，Python 3.9+ 可用最新版
+modelscope>=1.9.0,<1.10.0; python_version < "3.9"
+modelscope>=1.9.0; python_version >= "3.9"
+
+# 可选：mmpretrain（如需用 OpenMMLab 生态训练/推理）
 # mmpretrain>=1.0.0
+# openmim

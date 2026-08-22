@@ -6,6 +6,7 @@ import com.port.common.result.Result;
 import com.port.domain.entity.GateRecord;
 import com.port.service.GateRecordService;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/gate")
+@PreAuthorize("authentication.principal.getRole() == 'admin' or authentication.principal.getRole() == 'operator'")
 public class GateRecordController {
 
     @Resource

@@ -6,12 +6,14 @@ import com.port.common.result.Result;
 import com.port.domain.entity.VesselPlan;
 import com.port.service.VesselPlanService;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/vessel")
+@PreAuthorize("authentication.principal.getRole() == 'admin' or authentication.principal.getRole() == 'operator'")
 public class VesselPlanController {
 
     @Resource

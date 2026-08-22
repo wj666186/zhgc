@@ -16,10 +16,10 @@ app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 
-# 初始化AI服务
-ocr_service = OCRService()
-damage_service = DamageService()
-stack_service = StackService()
+# 初始化 AI 服务（传入 config 以便各服务读取权重路径、设备等配置）
+ocr_service = OCRService(Config)
+damage_service = DamageService(Config)
+stack_service = StackService(Config)
 
 
 def allowed_file(filename):
@@ -28,7 +28,7 @@ def allowed_file(filename):
 
 @app.route('/health', methods=['GET'])
 def health():
-    """健康检查"""
+    """健康检查：返回各模型加载状态"""
     return jsonify({
         'status': 'ok',
         'service': 'AI Inspection Service',
@@ -36,18 +36,27 @@ def health():
             'ocr_det': Config.OCR_DET_MODEL,
             'ocr_rec': Config.OCR_REC_MODEL,
             'damage': Config.DAMAGE_MODEL,
-            'stack': Config.STACK_MODEL
+            'stack': Config.STACK_MODEL,
+        },
+        'status_detail': {
+            'ocr_available': ocr_service.is_available,
+            'damage_available': damage_service.is_available,
+            'stack_available': stack_service.is_available,
+        },
+        'weights': {
+            'damage': Config.DAMAGE_WEIGHTS,
+            'stack': Config.STACK_WEIGHTS,
         },
         'metrics': {
             'damage_mAP': Config.DAMAGE_METRIC,
-            'stack_accuracy': Config.STACK_ACCURACY
-        }
+            'stack_accuracy': Config.STACK_ACCURACY,
+        },
     })
 
 
 @app.route('/api/ocr', methods=['POST'])
 def ocr_recognize():
-    """箱号OCR识别"""
+    """箱号 OCR 识别"""
     try:
         data = request.get_json()
         image_path = data.get('image_path')
@@ -61,7 +70,8 @@ def ocr_recognize():
         return jsonify({
             'ocrResult': container_no,
             'costMs': cost_ms,
-            'model': f"{Config.OCR_DET_MODEL} + {Config.OCR_REC_MODEL}"
+            'model': f"{Config.OCR_DET_MODEL} + {Config.OCR_REC_MODEL}",
+            'real_inference': ocr_service.is_available,
         })
     except Exception as e:
         logger.error(f"OCR error: {e}")
@@ -80,6 +90,7 @@ def damage_detect():
         start = time.time()
         result = damage_service.detect(image_path)
         result['costMs'] = int((time.time() - start) * 1000)
+        result['real_inference'] = damage_service.is_available
 
         return jsonify(result)
     except Exception as e:
@@ -99,6 +110,7 @@ def stack_classify():
         start = time.time()
         result = stack_service.classify(image_path)
         result['costMs'] = int((time.time() - start) * 1000)
+        result['real_inference'] = stack_service.is_available
 
         return jsonify(result)
     except Exception as e:
@@ -117,7 +129,7 @@ def inspect():
 
         start = time.time()
 
-        # 1. OCR箱号识别
+        # 1. OCR 箱号识别
         ocr_result = ocr_service.recognize(image_path)
 
         # 2. 破损检测
@@ -128,8 +140,10 @@ def inspect():
 
         total_cost = int((time.time() - start) * 1000)
 
-        # 综合置信度（取三者平均）
-        avg_confidence = round((damage_result['confidence'] + stack_result['confidence']) / 2, 3)
+        # 综合置信度（取破损和堆码的平均）
+        avg_confidence = round(
+            (damage_result['confidence'] + stack_result['confidence']) / 2, 3
+        )
 
         return jsonify({
             'ocrResult': ocr_result,
@@ -138,11 +152,16 @@ def inspect():
             'stackResult': stack_result['stack_result'],
             'confidence': avg_confidence,
             'costMs': total_cost,
+            'real_inference': {
+                'ocr': ocr_service.is_available,
+                'damage': damage_service.is_available,
+                'stack': stack_service.is_available,
+            },
             'details': {
                 'ocr': {'model': f"{Config.OCR_DET_MODEL} + {Config.OCR_REC_MODEL}"},
                 'damage': {'model': Config.DAMAGE_MODEL, 'metric': Config.DAMAGE_METRIC},
-                'stack': {'model': Config.STACK_MODEL, 'accuracy': Config.STACK_ACCURACY}
-            }
+                'stack': {'model': Config.STACK_MODEL, 'accuracy': Config.STACK_ACCURACY},
+            },
         })
     except Exception as e:
         logger.error(f"Inspect error: {e}")
@@ -151,5 +170,9 @@ def inspect():
 
 if __name__ == '__main__':
     os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+    os.makedirs(os.path.dirname(Config.DAMAGE_WEIGHTS), exist_ok=True)
     logger.info(f"Starting AI Inspection Service on port {Config.PORT}")
+    logger.info(f"OCR available: {ocr_service.is_available}")
+    logger.info(f"Damage available: {damage_service.is_available} (weights: {Config.DAMAGE_WEIGHTS})")
+    logger.info(f"Stack available: {stack_service.is_available} (weights: {Config.STACK_WEIGHTS})")
     app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)

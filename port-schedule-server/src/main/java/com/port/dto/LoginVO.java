@@ -6,6 +6,6 @@ import lombok.Data;
 public class LoginVO {
     private String token;
     private String username;
-    // 新增：用户角色 admin / user
+    // 用户角色 admin / operator
     private String role;
 }

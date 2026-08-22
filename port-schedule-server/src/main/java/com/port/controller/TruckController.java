@@ -6,6 +6,7 @@ import com.port.common.result.Result;
 import com.port.domain.entity.Truck;
 import com.port.service.TruckService;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/truck")
+@PreAuthorize("authentication.principal.getRole() == 'admin' or authentication.principal.getRole() == 'operator'")
 public class TruckController {
 
     @Resource

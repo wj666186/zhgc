@@ -17,11 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(
-                        "/user/login",
-                        "/api/container/twin",
-                        "/api/container/load/ship/**",
-                        "/api/container/unload/yard",
-                        "/api/container/savePos",
+                        "/api/login",
                         "/ws/container/**"   // 放行WebSocket握手地址
                 );
     }

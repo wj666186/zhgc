@@ -7,12 +7,14 @@ import com.port.service.ContainerService;
 import com.port.service.YardSlotService;
 import com.port.websocket.ContainerWebSocketServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/container/twin")
 @CrossOrigin(origins = "*") // 解决前端跨域
+@PreAuthorize("authentication.principal.getRole() == 'admin' or authentication.principal.getRole() == 'operator'")
 public class ContainerTwinController {
 
     @Autowired

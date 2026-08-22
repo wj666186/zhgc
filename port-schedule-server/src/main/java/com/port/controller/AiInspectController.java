@@ -6,6 +6,7 @@ import com.port.common.result.Result;
 import com.port.domain.entity.AiInspectRecord;
 import com.port.service.AiInspectRecordService;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
@@ -16,6 +17,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/ai")
+@PreAuthorize("authentication.principal.getRole() == 'admin' or authentication.principal.getRole() == 'operator'")
 public class AiInspectController {
 
     @Resource

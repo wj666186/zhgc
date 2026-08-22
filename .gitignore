@@ -1,11 +1,82 @@
+# ==== Java / Maven ====
+target/
+*.class
+*.jar
+*.war
+*.ear
 HELP.md
+
+# ==== Gradle ====
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### STS ###
+# ==== Node.js / Vue ====
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm
+.cache
+.vite/
+
+# ==== Python ====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+.eggs/
+
+# ==== AI 模型权重（大文件，按需提交）====
+# ai-server/models/*.pth
+
+# ==== AI 训练数据与上传文件（可重新生成）====
+ai-server/data/
+ai-server/uploads/
+uploads/
+
+# ==== IDE ====
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ==== 日志 ====
+*.log
+logs/
+
+# ==== Redis ====
+dump.rdb
+appendonly.aof
+
+# ==== 操作系统 ====
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# ==== STS / Eclipse ====
 .apt_generated
 .classpath
 .factorypath
@@ -14,25 +85,10 @@ build/
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-### NetBeans ###
+# ==== NetBeans ====
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-
-### VS Code ###
-.vscode/
-.idea/.idea/

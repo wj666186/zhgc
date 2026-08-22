@@ -6,12 +6,14 @@ import com.port.common.result.Result;
 import com.port.domain.entity.OperationLog;
 import com.port.service.OperationLogService;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/log")
+@PreAuthorize("authentication.principal.getRole() == 'admin' or authentication.principal.getRole() == 'operator'")
 public class OperationLogController {
 
     @Resource

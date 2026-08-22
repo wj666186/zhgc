@@ -1,37 +1,45 @@
 <template>
   <div class="dashboard-wrap">
+    <!-- 页面标题 -->
+    <div class="page-header">
+      <h2 class="page-title">运营数据看板</h2>
+      <div class="header-info">
+        <el-tag type="primary" effect="light" round>实时数据</el-tag>
+      </div>
+    </div>
+
     <!-- 统计卡片 -->
     <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #409EFF;">箱</div>
+      <div class="stat-card" style="--card-color: #409EFF;">
+        <div class="stat-icon">箱</div>
         <div class="stat-info">
           <div class="stat-value">{{ stats.containerTotal || 0 }}</div>
           <div class="stat-label">集装箱总数</div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #67C23A;">卡</div>
+      <div class="stat-card" style="--card-color: #67C23A;">
+        <div class="stat-icon">卡</div>
         <div class="stat-info">
           <div class="stat-value">{{ stats.truckTotal || 0 }}</div>
           <div class="stat-label">集卡总数</div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #E6A23C;">船</div>
+      <div class="stat-card" style="--card-color: #E6A23C;">
+        <div class="stat-icon">船</div>
         <div class="stat-info">
           <div class="stat-value">{{ stats.vesselWorking || 0 }}</div>
           <div class="stat-label">作业中船舶</div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #F56C6C;">桥</div>
+      <div class="stat-card" style="--card-color: #F56C6C;">
+        <div class="stat-icon">桥</div>
         <div class="stat-info">
           <div class="stat-value">{{ stats.craneWorking || 0 }}</div>
           <div class="stat-label">作业中岸桥</div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #909399;">AI</div>
+      <div class="stat-card" style="--card-color: #909399;">
+        <div class="stat-icon">AI</div>
         <div class="stat-info">
           <div class="stat-value">{{ stats.aiTotal || 0 }}</div>
           <div class="stat-label">AI检测次数</div>
@@ -39,7 +47,7 @@
       </div>
     </div>
 
-    <!-- 图表区域 -->
+    <!-- 图表区域 第一行 -->
     <div class="charts-row">
       <div class="chart-card">
         <div class="chart-title">集装箱状态分布</div>
@@ -55,6 +63,7 @@
       </div>
     </div>
 
+    <!-- 图表区域 第二行 -->
     <div class="charts-row">
       <div class="chart-card large">
         <div class="chart-title">近7天吞吐量趋势</div>
@@ -66,6 +75,7 @@
       </div>
     </div>
 
+    <!-- 图表区域 第三行 -->
     <div class="charts-row">
       <div class="chart-card full">
         <div class="chart-title">船舶在泊时间 TOP10</div>
@@ -126,8 +136,9 @@ const loadContainerStatus = async () => {
       containerChart.setOption({
         tooltip: { trigger: 'item' },
         legend: { bottom: 0, type: 'scroll' },
+        color: ['#67C23A', '#409EFF', '#E6A23C', '#909399'],
         series: [{
-          type: 'pie', radius: ['40%', '70%'], avoidLabelOverlap: false,
+          type: 'pie', radius: ['45%', '70%'], avoidLabelOverlap: false,
           label: { show: false }, emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold' } },
           data: list.length ? list : [
             { value: 0, name: '正常' }, { value: 0, name: '作业中' }, { value: 0, name: '破损' }, { value: 0, name: '已装船' }
@@ -149,8 +160,9 @@ const loadTruckStatus = async () => {
       truckChart.setOption({
         tooltip: { trigger: 'item' },
         legend: { bottom: 0, type: 'scroll' },
+        color: ['#67C23A', '#409EFF', '#E6A23C', '#F56C6C'],
         series: [{
-          type: 'pie', radius: ['40%', '70%'],
+          type: 'pie', radius: ['45%', '70%'],
           label: { show: false },
           data: list.length ? list : [
             { value: 0, name: '空闲' }, { value: 0, name: '运输中' }, { value: 0, name: '装卸中' }, { value: 0, name: '维修中' }
@@ -176,7 +188,17 @@ const loadEquipmentOee = async () => {
         grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
         xAxis: { type: 'category', data: names, axisLabel: { rotate: 30, fontSize: 10 } },
         yAxis: { type: 'value', max: 100 },
-        series: [{ type: 'bar', data: values, itemStyle: { color: '#409EFF' } }]
+        series: [{
+          type: 'bar', data: values,
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#11616B' },
+              { offset: 1, color: '#7BBDB6' }
+            ]),
+            borderRadius: [4, 4, 0, 0]
+          },
+          barWidth: '50%'
+        }]
       })
     }
   } catch (e) {
@@ -197,7 +219,17 @@ const loadThroughputTrend = async () => {
         grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
         xAxis: { type: 'category', boundaryGap: false, data: dates },
         yAxis: { type: 'value' },
-        series: [{ type: 'line', data: values, smooth: true, areaStyle: {}, itemStyle: { color: '#67C23A' } }]
+        series: [{
+          type: 'line', data: values, smooth: true,
+          lineStyle: { width: 3, color: '#11616B' },
+          itemStyle: { color: '#11616B' },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: 'rgba(17, 97, 107, 0.3)' },
+              { offset: 1, color: 'rgba(17, 97, 107, 0.02)' }
+            ])
+          }
+        }]
       })
     }
   } catch (e) {
@@ -222,7 +254,17 @@ const loadGateEfficiency = async () => {
         grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
         xAxis: { type: 'category', data: names },
         yAxis: { type: 'value', max: 100 },
-        series: [{ type: 'bar', data: values, itemStyle: { color: '#E6A23C' } }]
+        series: [{
+          type: 'bar', data: values,
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#E6A23C' },
+              { offset: 1, color: '#F5D78E' }
+            ]),
+            borderRadius: [4, 4, 0, 0]
+          },
+          barWidth: '45%'
+        }]
       })
     }
   } catch (e) {
@@ -234,7 +276,6 @@ const loadVesselTop = async () => {
   try {
     const res: any = await getVesselTop()
     const data = res?.data || res
-    // 确保data是数组，避免data is not iterable错误
     const list = Array.isArray(data) ? data : []
     const names = list.map((item: any) => item.vesselName || item.name || '').slice(0, 10)
     const values = list.map((item: any) => item.total || item.totalContainer || item.duration || item.value || 0).slice(0, 10)
@@ -244,7 +285,17 @@ const loadVesselTop = async () => {
         grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
         xAxis: { type: 'value' },
         yAxis: { type: 'category', data: names.reverse(), axisLabel: { fontSize: 11 } },
-        series: [{ type: 'bar', data: values.reverse(), itemStyle: { color: '#909399' } }]
+        series: [{
+          type: 'bar', data: values.reverse(),
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+              { offset: 0, color: '#7BBDB6' },
+              { offset: 1, color: '#11616B' }
+            ]),
+            borderRadius: [0, 4, 4, 0]
+          },
+          barWidth: '55%'
+        }]
       })
     }
   } catch (e) {
@@ -287,37 +338,140 @@ onUnmounted(() => {
 
 <style scoped>
 .dashboard-wrap {
-  width: 100%; height: 100%; padding: 16px 20px; box-sizing: border-box;
-  overflow-y: auto; background-color: transparent;
+  width: 100%;
+  height: 100%;
+  padding: 20px 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #11616B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.page-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(180deg, #11616B, #7BBDB6);
+  border-radius: 2px;
+}
+
+/* 统计卡片 */
 .stats-row {
-  display: flex; gap: 16px; margin-bottom: 16px;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
 }
+
 .stat-card {
-  flex: 1; background: #fff; border-radius: 8px; padding: 16px;
-  display: flex; align-items: center; gap: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-left: 4px solid var(--card-color);
+  transition: all 0.25s ease;
+  cursor: default;
 }
+.stat-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+}
+
 .stat-icon {
-  width: 48px; height: 48px; border-radius: 8px; color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; font-weight: bold;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--card-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+  opacity: 0.9;
 }
-.stat-value { font-size: 26px; font-weight: bold; color: #303133; }
-.stat-label { font-size: 13px; color: #909399; margin-top: 2px; }
+
+.stat-info {
+  flex: 1;
+  min-width: 0;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* 图表卡片 */
 .charts-row {
-  display: flex; gap: 16px; margin-bottom: 16px;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
 }
+
 .chart-card {
-  flex: 1; background: #fff; border-radius: 8px; padding: 12px 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.25s ease;
 }
-.chart-card.large { flex: 2; }
-.chart-card.full { flex: 1; }
+.chart-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+.chart-card.large {
+  flex: 2;
+}
+.chart-card.full {
+  flex: 1;
+}
+
 .chart-title {
-  font-size: 15px; font-weight: bold; color: #303133; margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+.chart-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: linear-gradient(180deg, #11616B, #7BBDB6);
+  border-radius: 2px;
+}
+
 .chart-container {
-  width: 100%; height: 260px;
+  width: 100%;
+  height: 260px;
 }
 </style>

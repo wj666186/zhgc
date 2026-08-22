@@ -24,10 +24,6 @@ body,
 }
 
 body {
-    background-image: url('@/assets/1.png');
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
-    background-attachment: fixed;
+    background: #f0f4f8;
 }
 </style>

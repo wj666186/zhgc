@@ -23,7 +23,7 @@ public class SysUser implements Serializable {
     /** BCrypt加密密码 */
     private String password;
 
-    /** 角色 admin / user */
+    /** 角色 admin / operator */
     private String role;
 
     /** 创建时间 */

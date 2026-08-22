@@ -5,6 +5,7 @@ import com.port.domain.entity.YardSlot;
 import com.port.mapper.YardSlotMapper;
 import com.port.service.YardAllocationService;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 // 增加 /api 统一前缀，和前端请求路径匹配
 @RestController
 @RequestMapping("/api/yard")
+@PreAuthorize("authentication.principal.getRole() == 'admin' or authentication.principal.getRole() == 'operator'")
 public class YardController {
 
     @Resource

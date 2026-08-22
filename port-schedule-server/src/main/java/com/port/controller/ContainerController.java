@@ -8,6 +8,7 @@ import com.port.dto.ContainerPosDTO;
 import com.port.service.ContainerService;
 import com.port.websocket.ContainerWebSocketServer;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/container")
+@PreAuthorize("authentication.principal.getRole() == 'admin' or authentication.principal.getRole() == 'operator'")
 public class ContainerController {
 
     // 注入Service层，标准三层架构
